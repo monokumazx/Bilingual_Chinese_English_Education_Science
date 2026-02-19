@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementary Science Glossary · 小学科学词汇表 (Grades 1–6)</title>
+    <!-- pinyin library -->
+    <script src="https://unpkg.com/pinyin@2.9.0/lib/web-pinyin.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #eaf4e5;
+            color: #1e3c2c;
+            line-height: 1.5;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0,40,20,0.25);
+            padding: 2rem 2rem 2.5rem;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid #a8d5ba;
+            padding-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #1d5430;
+        }
+        h1 small {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #2f7e4a;
+            display: block;
+            margin-top: 0.3rem;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .controls input, .controls button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 40px;
+            border: 1px solid #a8d5ba;
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .controls input {
+            flex: 1 1 250px;
+            min-width: 200px;
+            border: 2px solid #a8d5ba;
+        }
+        .controls button {
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .controls button:hover {
+            background: #1d5430;
+            transform: translateY(-2px);
+        }
+        .flashcard-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        .flashcard {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            background: #f5f0d7;
+            border-radius: 40px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid #88b382;
+            margin-bottom: 2rem;
+        }
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+        .flashcard .eng {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1f5068;
+        }
+        .flashcard .chi {
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: #2d6d8a;
+            margin-top: 1rem;
+        }
+        .flashcard .example {
+            font-size: 1.2rem;
+            color: #3f5465;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        .flashcard-controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        .flashcard-controls button {
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            border: none;
+            background: #2d6a4f;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .flashcard-controls button:disabled {
+            background: #a0b8a7;
+            cursor: not-allowed;
+        }
+        .flashcard-controls #toggleFront {
+            background: #ffb27a;
+            color: #1e2b3c;
+        }
+        .toc {
+            background: #d0e8d9;
+            border-radius: 40px;
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem 3rem;
+        }
+        .toc a {
+            font-size: 1.3rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: #1b4b2a;
+            background: white;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            box-shadow: 0 4px 6px rgba(0,30,20,0.1);
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .toc a:hover {
+            background: #ffe68f;
+            border-color: #cb9e2b;
+            transform: translateY(-2px);
+        }
+        section {
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 1.5rem;
+        }
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            border-left: 12px solid #48a36d;
+            padding-left: 1.2rem;
+            margin-bottom: 1.8rem;
+            color: #1d5430;
+        }
+        h2 .chi {
+            font-size: 1.7rem;
+            font-weight: 300;
+            color: #2f7e4a;
+            margin-left: 0.8rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,32,20,0.08);
+            margin-bottom: 1rem;
+        }
+        th {
+            background: #2d6a4f;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 1rem 1.2rem;
+            text-align: left;
+        }
+        th:first-child { border-radius: 16px 0 0 0; }
+        th:last-child { border-radius: 0 16px 0 0; }
+        td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #c4e0d0;
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .icon-cell {
+            font-size: 1.6rem;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            width: 50px;
+        }
+        .icon-cell svg {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+        .eng-term {
+            font-weight: 600;
+            color: #1d5430;
+            font-size: 1.1rem;
+        }
+        .chi-term {
+            font-weight: 500;
+            color: #2f7e4a;
+        }
+        .example {
+            color: #3f5e4c;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .example i {
+            color: #2d7e5b;
+        }
+        .speaker {
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: 0.1s;
+        }
+        .speaker:hover {
+            transform: scale(1.2);
+            color: #ff8c42;
+        }
+        ruby {
+            ruby-align: center;
+        }
+        rt {
+            font-size: 0.8rem;
+            color: #555;
+            font-weight: normal;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f4fbf7;
+        }
+        tbody tr:hover {
+            background-color: #fff1cf;
+        }
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 1rem;
+            color: #5a7a6a;
+            border-top: 2px dashed #a8d5ba;
+            padding-top: 2rem;
+        }
+        .footnote {
+            background: #e0f0e8;
+            border-radius: 30px;
+            padding: 1.2rem;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 700px) {
+            body { padding: 0.8rem; }
+            h1 { font-size: 2rem; }
+            .toc { flex-direction: column; align-items: center; gap: 0.8rem; }
+            .toc a { width: 100%; text-align: center; }
+            th, td { padding: 0.8rem; }
+            .icon-cell { font-size: 1.2rem; width: 30px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🔬 Elementary Science Glossary <span style="font-weight:300;">·</span> 小学科学词汇表</h1>
+        <p style="font-size:1.3rem; color:#3d8b5c;">Grades 1–6  |  一年级至六年级</p>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="🔍 Search English or Chinese... 搜索英文或中文...">
+            <button id="flashcardBtn">🃏 Flashcard Mode</button>
+            <button id="glossaryBtn" style="display:none;">📖 Back to Glossary</button>
+        </div>
+    </header>
+
+    <!-- Flashcard view -->
+    <div id="flashcardContainer" class="flashcard-container">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+            <div id="cardEnglish" class="eng">English</div>
+            <div id="cardChinese" class="chi" style="display: none;"></div>
+            <div id="cardExample" class="example" style="display: none;"></div>
+        </div>
+        <div class="flashcard-controls">
+            <button id="prevCard" disabled>◀ Previous</button>
+            <button id="shuffleCards">🔄 Shuffle</button>
+            <button id="nextCard">Next ▶</button>
+            <button id="toggleFront">Front: English</button>
+        </div>
+        <p id="cardCount">1 / 1</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc" id="toc">
+        <a href="#inquiry">1. Inquiry & Skills<br>探究与技能</a>
+        <a href="#lifesci">2. Life Science<br>生命科学</a>
+        <a href="#physical">3. Physical Science<br>物质科学</a>
+        <a href="#earth">4. Earth & Space<br>地球与太空</a>
+        <a href="#human">5. Human Body & Health<br>人体与健康</a>
+    </div>
+
+    <!-- All glossary sections -->
+    <div id="glossarySections">
+        <!-- SECTION 1 – SCIENTIFIC INQUIRY & SKILLS -->
+        <section id="inquiry">
+            <h2>1. Scientific Inquiry & Skills <span class="chi">科学探究与技能</span></h2>
+            <table class="glossary-table">
+                <thead><tr><th>English</th><th>简体中文</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td class="eng-term">Science</td><td class="chi-term">科学</td><td class="example">Study of the natural world.</td></tr>
+                    <tr><td class="eng-term">Scientist</td><td class="chi-term">科学家</td><td class="example">A person who does science.</td></tr>
+                    <tr><td class="eng-term">Hypothesis</td><td class="chi-term">假设</td><td class="example">An educated guess before an experiment.</td></tr>
+                    <tr><td class="eng-term">Experiment</td><td class="chi-term">实验</td><td class="example">A test to see if a hypothesis is correct.</td></tr>
+                    <tr><td class="eng-term">Observation</td><td class="chi-term">观察</td><td class="example">Using your senses to gather information.</td></tr>
+                    <tr><td class="eng-term">Variable</td><td class="chi-term">变量</td><td class="example">Something that can change in an experiment.</td></tr>
+                    <tr><td class="eng-term">Conclusion</td><td class="chi-term">结论</td><td class="example">What you learn from an experiment.</td></tr>
+                    <tr><td class="eng-term">Predict</td><td class="chi-term">预测</td><td class="example">Say what might happen in the future.</td></tr>
+                    <tr><td class="eng-term">Measure</td><td class="chi-term">测量</td><td class="example">Find the size, length, or amount of something.</td></tr>
+                    <tr><td class="eng-term">Data</td><td class="chi-term">数据</td><td class="example">Information collected during an experiment.</td></tr>
+                    <tr><td class="eng-term">Record</td><td class="chi-term">记录</td><td class="example">Write down observations or data.</td></tr>
+                    <tr><td class="eng-term">Analyze</td><td class="chi-term">分析</td><td class="example">Look closely at data to find patterns.</td></tr>
+                    <tr><td class="eng-term">Evidence</td><td class="chi-term">证据</td><td class="example">Information that supports a conclusion.</td></tr>
+                    <tr><td class="eng-term">Infer</td><td class="chi-term">推断</td><td class="example">Make a conclusion based on evidence.</td></tr>
+                    <tr><td class="eng-term">Classify</td><td class="chi-term">分类</td><td class="example">Group things by how they are alike.</td></tr>
+                    <tr><td class="eng-term">Model</td><td class="chi-term">模型</td><td class="example">A representation of something real.</td></tr>
+                    <tr><td class="eng-term">Safety</td><td class="chi-term">安全</td><td class="example">Following rules to avoid injury.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 2 – LIFE SCIENCE (with icon column) -->
+        <section id="lifesci">
+            <h2>2. Life Science <span class="chi">生命科学</span></h2>
+            <table class="glossary-table">
+                <thead><tr><th>Icon</th><th>English</th><th>简体中文</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td class="icon-cell">🌱</td><td class="eng-term">Living thing</td><td class="chi-term">生物</td><td class="example">Plants and animals are living.</td></tr>
+                    <tr><td class="icon-cell">🪨</td><td class="eng-term">Non‑living thing</td><td class="chi-term">非生物</td><td class="example">Rock, water, air.</td></tr>
+                    <tr><td class="icon-cell">🧫</td><td class="eng-term">Cell</td><td class="chi-term">细胞</td><td class="example">Basic unit of life.</td></tr>
+                    <tr><td class="icon-cell">🌿</td><td class="eng-term">Plant</td><td class="chi-term">植物</td><td class="example">Makes its own food using sunlight.</td></tr>
+                    <tr><td class="icon-cell">🐶</td><td class="eng-term">Animal</td><td class="chi-term">动物</td><td class="example">Eats other organisms.</td></tr>
+                    <tr><td class="icon-cell">🌻</td><td class="eng-term">Flower</td><td class="chi-term">花</td><td class="example">Reproductive part of a plant.</td></tr>
+                    <tr><td class="icon-cell">🌳</td><td class="eng-term">Tree</td><td class="chi-term">树</td><td class="example">A tall plant with a trunk.</td></tr>
+                    <tr><td class="icon-cell">🍃</td><td class="eng-term">Leaf</td><td class="chi-term">叶子</td><td class="example">Where photosynthesis happens.</td></tr>
+                    <tr><td class="icon-cell">🌱</td><td class="eng-term">Seed</td><td class="chi-term">种子</td><td class="example">A baby plant inside a coat.</td></tr>
+                    <tr><td class="icon-cell">☀️</td><td class="eng-term">Photosynthesis</td><td class="chi-term">光合作用</td><td class="example">Plants use sunlight to make food.</td></tr>
+                    <tr><td class="icon-cell">🌱➡️🌿</td><td class="eng-term">Germination</td><td class="chi-term">发芽</td><td class="example">When a seed starts to grow.</td></tr>
+                    <tr><td class="icon-cell">🦴</td><td class="eng-term">Vertebrate</td><td class="chi-term">脊椎动物</td><td class="example">Animals with a backbone.</td></tr>
+                    <tr><td class="icon-cell">🐌</td><td class="eng-term">Invertebrate</td><td class="chi-term">无脊椎动物</td><td class="example">Animals without a backbone.</td></tr>
+                    <tr><td class="icon-cell">🐾</td><td class="eng-term">Mammal</td><td class="chi-term">哺乳动物</td><td class="example">Hairy, feeds milk to babies.</td></tr>
+                    <tr><td class="icon-cell">🐦</td><td class="eng-term">Bird</td><td class="chi-term">鸟类</td><td class="example">Has feathers, lays eggs.</td></tr>
+                    <tr><td class="icon-cell">🐟</td><td class="eng-term">Fish</td><td class="chi-term">鱼</td><td class="example">Lives in water, has gills.</td></tr>
+                    <tr><td class="icon-cell">🐸</td><td class="eng-term">Amphibian</td><td class="chi-term">两栖动物</td><td class="example">Lives on land and water.</td></tr>
+                    <tr><td class="icon-cell">🐍</td><td class="eng-term">Reptile</td><td class="chi-term">爬行动物</td><td class="example">Scaly skin, lays eggs.</td></tr>
+                    <tr><td class="icon-cell">🐞</td><td class="eng-term">Insect</td><td class="chi-term">昆虫</td><td class="example">Six legs, three body parts.</td></tr>
+                    <tr><td class="icon-cell">🏞️</td><td class="eng-term">Habitat</td><td class="chi-term">栖息地</td><td class="example">Where an animal or plant lives.</td></tr>
+                    <tr><td class="icon-cell">🌍</td><td class="eng-term">Ecosystem</td><td class="chi-term">生态系统</td><td class="example">Living and non‑living things interacting.</td></tr>
+                    <tr><td class="icon-cell">🕸️</td><td class="eng-term">Food chain</td><td class="chi-term">食物链</td><td class="example">Shows who eats whom.</td></tr>
+                    <tr><td class="icon-cell">🍃➡️🐛➡️🐦</td><td class="eng-term">Food web</td><td class="chi-term">食物网</td><td class="example">Many connected food chains.</td></tr>
+                    <tr><td class="icon-cell">🦁</td><td class="eng-term">Predator</td><td class="chi-term">捕食者</td><td class="example">An animal that hunts others.</td></tr>
+                    <tr><td class="icon-cell">🐇</td><td class="eng-term">Prey</td><td class="chi-term">猎物</td><td class="example">An animal that is hunted.</td></tr>
+                    <tr><td class="icon-cell">🦒</td><td class="eng-term">Adaptation</td><td class="chi-term">适应</td><td class="example">A trait that helps survival.</td></tr>
+                    <tr><td class="icon-cell">🦋</td><td class="eng-term">Metamorphosis</td><td class="chi-term">变态</td><td class="example">Change in form (caterpillar to butterfly).</td></tr>
+                    <tr><td class="icon-cell">❄️🐻</td><td class="eng-term">Hibernation</td><td class="chi-term">冬眠</td><td class="example">Sleeping through winter.</td></tr>
+                    <tr><td class="icon-cell">🕊️➡️🌍</td><td class="eng-term">Migration</td><td class="chi-term">迁徙</td><td class="example">Moving to another place.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 3 – PHYSICAL SCIENCE (with icon column) -->
+        <section id="physical">
+            <h2>3. Physical Science <span class="chi">物质科学</span></h2>
+            <table class="glossary-table">
+                <thead><tr><th>Icon</th><th>English</th><th>简体中文</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td class="icon-cell">⚛️</td><td class="eng-term">Matter</td><td class="chi-term">物质</td><td class="example">Anything that takes up space.</td></tr>
+                    <tr><td class="icon-cell">🧱</td><td class="eng-term">Solid</td><td class="chi-term">固体</td><td class="example">Has a definite shape and volume.</td></tr>
+                    <tr><td class="icon-cell">💧</td><td class="eng-term">Liquid</td><td class="chi-term">液体</td><td class="example">Takes the shape of its container.</td></tr>
+                    <tr><td class="icon-cell">💨</td><td class="eng-term">Gas</td><td class="chi-term">气体</td><td class="example">Spreads out to fill any space.</td></tr>
+                    <tr><td class="icon-cell">⚖️</td><td class="eng-term">Mass</td><td class="chi-term">质量</td><td class="example">How much matter is in an object.</td></tr>
+                    <tr><td class="icon-cell">📦</td><td class="eng-term">Volume</td><td class="chi-term">体积</td><td class="example">How much space matter takes up.</td></tr>
+                    <tr><td class="icon-cell">💪</td><td class="eng-term">Force</td><td class="chi-term">力</td><td class="example">A push or a pull.</td></tr>
+                    <tr><td class="icon-cell">⚡</td><td class="eng-term">Motion</td><td class="chi-term">运动</td><td class="example">Change in position.</td></tr>
+                    <tr><td class="icon-cell">⬇️</td><td class="eng-term">Gravity</td><td class="chi-term">重力</td><td class="example">Force that pulls things down.</td></tr>
+                    <tr><td class="icon-cell">🧲</td><td class="eng-term">Magnet</td><td class="chi-term">磁铁</td><td class="example">Attracts iron and steel.</td></tr>
+                    <tr><td class="icon-cell">↔️</td><td class="eng-term">Friction</td><td class="chi-term">摩擦力</td><td class="example">Force that slows things down.</td></tr>
+                    <tr><td class="icon-cell">⚡</td><td class="eng-term">Energy</td><td class="chi-term">能量</td><td class="example">The ability to do work.</td></tr>
+                    <tr><td class="icon-cell">🔋</td><td class="eng-term">Electricity</td><td class="chi-term">电</td><td class="example">A form of energy.</td></tr>
+                    <tr><td class="icon-cell">💡</td><td class="eng-term">Circuit</td><td class="chi-term">电路</td><td class="example">A path for electricity.</td></tr>
+                    <tr><td class="icon-cell">🔌</td><td class="eng-term">Battery</td><td class="chi-term">电池</td><td class="example">Stores electricity.</td></tr>
+                    <tr><td class="icon-cell">☀️</td><td class="eng-term">Light</td><td class="chi-term">光</td><td class="example">Energy that lets us see.</td></tr>
+                    <tr><td class="icon-cell">🔊</td><td class="eng-term">Sound</td><td class="chi-term">声音</td><td class="example">Energy we hear.</td></tr>
+                    <tr><td class="icon-cell">🔥</td><td class="eng-term">Heat</td><td class="chi-term">热</td><td class="example">Thermal energy.</td></tr>
+                    <tr><td class="icon-cell">🔄</td><td class="eng-term">Simple machine</td><td class="chi-term">简单机械</td><td class="example">Lever, pulley, wheel, etc.</td></tr>
+                    <tr><td class="icon-cell">⚗️</td><td class="eng-term">Chemical change</td><td class="chi-term">化学变化</td><td class="example">Rust, burning.</td></tr>
+                    <tr><td class="icon-cell">💧➡️💨</td><td class="eng-term">Physical change</td><td class="chi-term">物理变化</td><td class="example">Melting, freezing.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 4 – EARTH & SPACE SCIENCE (with icon column) -->
+        <section id="earth">
+            <h2>4. Earth & Space Science <span class="chi">地球与太空科学</span></h2>
+            <table class="glossary-table">
+                <thead><tr><th>Icon</th><th>English</th><th>简体中文</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td class="icon-cell">🌍</td><td class="eng-term">Earth</td><td class="chi-term">地球</td><td class="example">Our home planet.</td></tr>
+                    <tr><td class="icon-cell">🪐</td><td class="eng-term">Planet</td><td class="chi-term">行星</td><td class="example">A large body orbiting a star.</td></tr>
+                    <tr><td class="icon-cell">☀️</td><td class="eng-term">Sun</td><td class="chi-term">太阳</td><td class="example">The star in our solar system.</td></tr>
+                    <tr><td class="icon-cell">🌙</td><td class="eng-term">Moon</td><td class="chi-term">月亮</td><td class="example">Earth’s natural satellite.</td></tr>
+                    <tr><td class="icon-cell">🌌</td><td class="eng-term">Solar system</td><td class="chi-term">太阳系</td><td class="example">Sun and everything that orbits it.</td></tr>
+                    <tr><td class="icon-cell">⭐</td><td class="eng-term">Star</td><td class="chi-term">恒星</td><td class="example">A huge ball of hot gas.</td></tr>
+                    <tr><td class="icon-cell">🌑🌒🌓</td><td class="eng-term">Moon phases</td><td class="chi-term">月相</td><td class="example">New, crescent, full, etc.</td></tr>
+                    <tr><td class="icon-cell">🪨</td><td class="eng-term">Rock</td><td class="chi-term">岩石</td><td class="example">Solid mineral material.</td></tr>
+                    <tr><td class="icon-cell">⛰️</td><td class="eng-term">Mountain</td><td class="chi-term">山</td><td class="example">High, rocky landform.</td></tr>
+                    <tr><td class="icon-cell">🌋</td><td class="eng-term">Volcano</td><td class="chi-term">火山</td><td class="example">Mountain that erupts.</td></tr>
+                    <tr><td class="icon-cell">🏜️</td><td class="eng-term">Desert</td><td class="chi-term">沙漠</td><td class="example">Dry, sandy place.</td></tr>
+                    <tr><td class="icon-cell">🌊</td><td class="eng-term">Ocean</td><td class="chi-term">海洋</td><td class="example">Large saltwater body.</td></tr>
+                    <tr><td class="icon-cell">💧</td><td class="eng-term">Water cycle</td><td class="chi-term">水循环</td><td class="example">Evaporation, condensation, precipitation.</td></tr>
+                    <tr><td class="icon-cell">☁️</td><td class="eng-term">Cloud</td><td class="chi-term">云</td><td class="example">Water droplets in the sky.</td></tr>
+                    <tr><td class="icon-cell">🌧️</td><td class="eng-term">Rain</td><td class="chi-term">雨</td><td class="example">Water falling from clouds.</td></tr>
+                    <tr><td class="icon-cell">❄️</td><td class="eng-term">Snow</td><td class="chi-term">雪</td><td class="example">Frozen water crystals.</td></tr>
+                    <tr><td class="icon-cell">🌪️</td><td class="eng-term">Tornado</td><td class="chi-term">龙卷风</td><td class="example">Violent rotating wind.</td></tr>
+                    <tr><td class="icon-cell">🌀</td><td class="eng-term">Hurricane</td><td class="chi-term">飓风</td><td class="example">Big storm with strong wind.</td></tr>
+                    <tr><td class="icon-cell">🌡️</td><td class="eng-term">Temperature</td><td class="chi-term">温度</td><td class="example">How hot or cold.</td></tr>
+                    <tr><td class="icon-cell">⏳</td><td class="eng-term">Weathering</td><td class="chi-term">风化</td><td class="example">Rocks breaking down.</td></tr>
+                    <tr><td class="icon-cell">🪨➡️🏞️</td><td class="eng-term">Erosion</td><td class="chi-term">侵蚀</td><td class="example">Moving of rock/soil by wind/water.</td></tr>
+                    <tr><td class="icon-cell">🛰️</td><td class="eng-term">Satellite</td><td class="chi-term">卫星</td><td class="example">Object that orbits a planet.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 5 – HUMAN BODY & HEALTH (with icon column) -->
+        <section id="human">
+            <h2>5. Human Body & Health <span class="chi">人体与健康</span></h2>
+            <table class="glossary-table">
+                <thead><tr><th>Icon</th><th>English</th><th>简体中文</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td class="icon-cell">🧍</td><td class="eng-term">Body</td><td class="chi-term">身体</td><td class="example">The whole human.</td></tr>
+                    <tr><td class="icon-cell">🦴</td><td class="eng-term">Skeleton</td><td class="chi-term">骨骼</td><td class="example">Bones that support the body.</td></tr>
+                    <tr><td class="icon-cell">💪</td><td class="eng-term">Muscle</td><td class="chi-term">肌肉</td><td class="example">Tissue that moves the body.</td></tr>
+                    <tr><td class="icon-cell">🧠</td><td class="eng-term">Brain</td><td class="chi-term">大脑</td><td class="example">Controls the body.</td></tr>
+                    <tr><td class="icon-cell">❤️</td><td class="eng-term">Heart</td><td class="chi-term">心脏</td><td class="example">Pumps blood.</td></tr>
+                    <tr><td class="icon-cell">🫁</td><td class="eng-term">Lung</td><td class="chi-term">肺</td><td class="example">Organ for breathing.</td></tr>
+                    <tr><td class="icon-cell">🥩</td><td class="eng-term">Stomach</td><td class="chi-term">胃</td><td class="example">Digests food.</td></tr>
+                    <tr><td class="icon-cell">👁️</td><td class="eng-term">Eye</td><td class="chi-term">眼睛</td><td class="example">Sense organ for sight.</td></tr>
+                    <tr><td class="icon-cell">👂</td><td class="eng-term">Ear</td><td class="chi-term">耳朵</td><td class="example">Sense organ for hearing.</td></tr>
+                    <tr><td class="icon-cell">👃</td><td class="eng-term">Nose</td><td class="chi-term">鼻子</td><td class="example">Sense organ for smell.</td></tr>
+                    <tr><td class="icon-cell">👅</td><td class="eng-term">Tongue</td><td class="chi-term">舌头</td><td class="example">Sense organ for taste.</td></tr>
+                    <tr><td class="icon-cell">🖐️</td><td class="eng-term">Skin</td><td class="chi-term">皮肤</td><td class="example">Sense organ for touch.</td></tr>
+                    <tr><td class="icon-cell">🍎</td><td class="eng-term">Nutrition</td><td class="chi-term">营养</td><td class="example">Food needed for health.</td></tr>
+                    <tr><td class="icon-cell">🏃</td><td class="eng-term">Exercise</td><td class="chi-term">运动</td><td class="example">Physical activity for fitness.</td></tr>
+                    <tr><td class="icon-cell">😴</td><td class="eng-term">Sleep</td><td class="chi-term">睡眠</td><td class="example">Rest for the body.</td></tr>
+                    <tr><td class="icon-cell">🦷</td><td class="eng-term">Tooth / Teeth</td><td class="chi-term">牙齿</td><td class="example">Used for chewing.</td></tr>
+                    <tr><td class="icon-cell">🩸</td><td class="eng-term">Blood</td><td class="chi-term">血液</td><td class="example">Carries oxygen and nutrients.</td></tr>
+                    <tr><td class="icon-cell">🦠</td><td class="eng-term">Germ</td><td class="chi-term">细菌 / 病菌</td><td class="example">Microorganism that can cause sickness.</td></tr>
+                    <tr><td class="icon-cell">💊</td><td class="eng-term">Medicine</td><td class="chi-term">药</td><td class="example">Helps you get better.</td></tr>
+                    <tr><td class="icon-cell">🍼</td><td class="eng-term">Health</td><td class="chi-term">健康</td><td class="example">Being free from sickness.</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <footer>
+        <p>🧪 Created for elementary students (Grades 1–6) · 供小学生使用（一年级至六年级）</p>
+        <p>Sources: NYSED elementary science, CST exam, classroom vocabulary · 参考纽约州科学纲要及课堂常用词</p>
+        <div class="footnote">
+            ⭐ <strong>Features:</strong> Pinyin, text-to-speech (click 🔊), search, flashcard mode with shuffle, visual icons, and front-language toggle.<br>
+            ⭐ <strong>使用方法：</strong> 拼音、点击🔊发声、搜索、抽认卡模式（可随机排序、切换正反面语言），配有图标。
+        </div>
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // ---------- Data collection ----------
+        let glossaryData = [];
+        const sections = document.querySelectorAll('#glossarySections section');
+        sections.forEach(section => {
+            const rows = section.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                let english, chinese, example;
+                const isIconTable = section.id === 'lifesci' || section.id === 'physical' || section.id === 'earth' || section.id === 'human';
+                if (isIconTable) {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 4) {
+                        english = cells[1].innerText.trim();
+                        chinese = cells[2].innerText.trim();
+                        example = cells[3].innerText.trim();
+                    }
+                } else {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        english = cells[0].innerText.trim();
+                        chinese = cells[1].innerText.trim();
+                        example = cells[2].innerText.trim();
+                    }
+                }
+                if (english && chinese) {
+                    glossaryData.push({
+                        english: english,
+                        chinese: chinese,
+                        example: example,
+                        section: section.id
+                    });
+                }
+            });
+        });
+
+        // ---------- Flashcard state ----------
+        let currentIndex = 0;
+        let flashcardMode = false;
+        let shuffledIndices = [];
+        let frontIsEnglish = true;
+        let isFlipped = false;
+
+        const flashcardContainer = document.getElementById('flashcardContainer');
+        const flashcardBtn = document.getElementById('flashcardBtn');
+        const glossaryBtn = document.getElementById('glossaryBtn');
+        const cardEnglish = document.getElementById('cardEnglish');
+        const cardChinese = document.getElementById('cardChinese');
+        const cardExample = document.getElementById('cardExample');
+        const prevBtn = document.getElementById('prevCard');
+        const nextBtn = document.getElementById('nextCard');
+        const shuffleBtn = document.getElementById('shuffleCards');
+        const toggleFrontBtn = document.getElementById('toggleFront');
+        const cardCount = document.getElementById('cardCount');
+        const searchInput = document.getElementById('searchInput');
+
+        function showCard(index) {
+            if (!flashcardMode || glossaryData.length === 0) return;
+            let dataIndex;
+            if (shuffledIndices.length > 0 && index < shuffledIndices.length) {
+                dataIndex = shuffledIndices[index];
+            } else {
+                dataIndex = index % glossaryData.length;
+            }
+            const item = glossaryData[dataIndex];
+            cardEnglish.innerText = item.english;
+            cardChinese.innerText = item.chinese;
+            cardExample.innerText = item.example;
+
+            isFlipped = false;
+            updateCardDisplay();
+
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === (shuffledIndices.length ? shuffledIndices.length - 1 : glossaryData.length - 1));
+            cardCount.innerText = `${index+1} / ${shuffledIndices.length || glossaryData.length}`;
+        }
+
+        function updateCardDisplay() {
+            if (!flashcardMode) return;
+            if (frontIsEnglish) {
+                if (!isFlipped) {
+                    cardEnglish.style.display = 'block';
+                    cardChinese.style.display = 'none';
+                    cardExample.style.display = 'none';
+                } else {
+                    cardEnglish.style.display = 'none';
+                    cardChinese.style.display = 'block';
+                    cardExample.style.display = 'block';
+                }
+            } else {
+                if (!isFlipped) {
+                    cardEnglish.style.display = 'none';
+                    cardChinese.style.display = 'block';
+                    cardExample.style.display = 'none';
+                } else {
+                    cardEnglish.style.display = 'block';
+                    cardChinese.style.display = 'none';
+                    cardExample.style.display = 'block';
+                }
+            }
+        }
+
+        window.flipCard = function() {
+            if (!flashcardMode) return;
+            isFlipped = !isFlipped;
+            updateCardDisplay();
+        };
+
+        function nextCard() {
+            if (!flashcardMode) return;
+            if (shuffledIndices.length) {
+                if (currentIndex < shuffledIndices.length - 1) {
+                    currentIndex++;
+                    showCard(currentIndex);
+                }
+            } else {
+                if (currentIndex < glossaryData.length - 1) {
+                    currentIndex++;
+                    showCard(currentIndex);
+                }
+            }
+        }
+
+        function prevCard() {
+            if (!flashcardMode) return;
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCard(currentIndex);
+            }
+        }
+
+        function shuffleCards() {
+            if (!flashcardMode) return;
+            shuffledIndices = Array.from({length: glossaryData.length}, (_, i) => i);
+            for (let i = shuffledIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledIndices[i], shuffledIndices[j]] = [shuffledIndices[j], shuffledIndices[i]];
+            }
+            currentIndex = 0;
+            showCard(currentIndex);
+        }
+
+        function toggleFront() {
+            frontIsEnglish = !frontIsEnglish;
+            toggleFrontBtn.innerText = frontIsEnglish ? 'Front: English' : 'Front: 中文';
+            isFlipped = false;
+            updateCardDisplay();
+        }
+
+        function enterFlashcardMode() {
+            flashcardMode = true;
+            flashcardContainer.style.display = 'flex';
+            glossaryBtn.style.display = 'inline-block';
+            flashcardBtn.style.display = 'none';
+            shuffledIndices = [];
+            currentIndex = 0;
+            frontIsEnglish = true;
+            toggleFrontBtn.innerText = 'Front: English';
+            isFlipped = false;
+            showCard(0);
+        }
+
+        function exitFlashcardMode() {
+            flashcardMode = false;
+            flashcardContainer.style.display = 'none';
+            glossaryBtn.style.display = 'none';
+            flashcardBtn.style.display = 'inline-block';
+        }
+
+        flashcardBtn.addEventListener('click', enterFlashcardMode);
+        glossaryBtn.addEventListener('click', exitFlashcardMode);
+        prevBtn.addEventListener('click', prevCard);
+        nextBtn.addEventListener('click', nextCard);
+        shuffleBtn.addEventListener('click', shuffleCards);
+        toggleFrontBtn.addEventListener('click', toggleFront);
+
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const tables = document.querySelectorAll('.glossary-table');
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            });
+        });
+
+        function addPinyinAndSpeakers() {
+            const chiCells = document.querySelectorAll('.chi-term');
+            chiCells.forEach(cell => {
+                const chineseText = cell.innerText.trim();
+                if (!chineseText) return;
+                if (window.pinyin) {
+                    const pinyinText = window.pinyin(chineseText, { style: window.pinyin.STYLE_TONE, segment: true }).join(' ');
+                    const ruby = document.createElement('ruby');
+                    ruby.innerHTML = `${chineseText}<rt>${pinyinText}</rt>`;
+                    cell.innerHTML = '';
+                    cell.appendChild(ruby);
+                }
+                const speaker = document.createElement('span');
+                speaker.className = 'speaker';
+                speaker.innerHTML = '🔊';
+                speaker.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const utterance = new SpeechSynthesisUtterance(chineseText);
+                    utterance.lang = 'zh-CN';
+                    speechSynthesis.speak(utterance);
+                });
+                cell.appendChild(speaker);
+            });
+            const engCells = document.querySelectorAll('.eng-term');
+            engCells.forEach(cell => {
+                const engText = cell.innerText.trim();
+                if (!engText) return;
+                const speaker = document.createElement('span');
+                speaker.className = 'speaker';
+                speaker.innerHTML = '🔊';
+                speaker.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const utterance = new SpeechSynthesisUtterance(engText);
+                    utterance.lang = 'en-US';
+                    speechSynthesis.speak(utterance);
+                });
+                cell.appendChild(speaker);
+            });
+        }
+
+        window.addEventListener('load', addPinyinAndSpeakers);
+    })();
+</script>
+</body>
+</html>
